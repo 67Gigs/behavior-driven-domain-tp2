@@ -271,3 +271,161 @@ Scenario: Vainqueur avec majorité absolue importante
         | Candidat A | 800   | 80.00%      |
         | Candidat B | 100   | 10.00%      |
         | Candidat C | 100   | 10.00%      |
+
+Scenario: Égalité parfaite entre les 2ème et 3ème candidats - Ordre alphabétique
+    Given le scrutin est au tour 1
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 500   |
+        | Candidat B | 250   |
+        | Candidat C | 250   |
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And aucun vainqueur ne doit être déterminé
+    And les candidats qualifiés doivent être dans l'ordre alphabétique en cas d'égalité:
+        | Candidat   |
+        | Candidat A |
+        | Candidat B |
+
+Scenario: Égalité parfaite entre 3 candidats pour la 2ème place - Ordre alphabétique
+    Given un scrutin majoritaire existe
+    And les candidats suivants sont enregistrés:
+        | Nom        |
+        | Candidat A |
+        | Candidat B |
+        | Candidat C |
+        | Candidat D |
+    And le scrutin est au tour 1
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 400   |
+        | Candidat B | 200   |
+        | Candidat C | 200   |
+        | Candidat D | 200   |
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And aucun vainqueur ne doit être déterminé
+    And les candidats qualifiés doivent être dans l'ordre alphabétique en cas d'égalité:
+        | Candidat   |
+        | Candidat A |
+        | Candidat B |
+
+Scenario: Gestion des votes blancs - Premier tour avec vainqueur
+    Given le scrutin est au tour 1
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 600   |
+        | Candidat B | 300   |
+        | Candidat C | 100   |
+    And 200 votes blancs ont été enregistrés
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And le vainqueur doit être "Candidat A"
+    And le nombre de votes blancs doit être 200
+    And le total des votes exprimés doit être 1200
+    And les résultats doivent afficher:
+        | Candidat   | Votes | Pourcentage |
+        | Candidat A | 600   | 60.00%      |
+        | Candidat B | 300   | 30.00%      |
+        | Candidat C | 100   | 10.00%      |
+
+Scenario: Gestion des votes blancs - Premier tour sans vainqueur
+    Given le scrutin est au tour 1
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 400   |
+        | Candidat B | 350   |
+        | Candidat C | 250   |
+    And 300 votes blancs ont été enregistrés
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And aucun vainqueur ne doit être déterminé
+    And le nombre de votes blancs doit être 300
+    And le total des votes exprimés doit être 1300
+    And les candidats qualifiés pour le second tour doivent être:
+        | Candidat   |
+        | Candidat A |
+        | Candidat B |
+
+Scenario: Gestion des votes blancs - Second tour avec vainqueur
+    Given le scrutin est au tour 2
+    And les candidats qualifiés sont:
+        | Candidat   |
+        | Candidat A |
+        | Candidat B |
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 450   |
+        | Candidat B | 350   |
+    And 200 votes blancs ont été enregistrés
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And le vainqueur doit être "Candidat A"
+    And le nombre de votes blancs doit être 200
+    And le total des votes exprimés doit être 1000
+
+Scenario: Gestion des votes blancs - Second tour avec égalité
+    Given le scrutin est au tour 2
+    And les candidats qualifiés sont:
+        | Candidat   |
+        | Candidat A |
+        | Candidat B |
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 400   |
+        | Candidat B | 400   |
+    And 200 votes blancs ont été enregistrés
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And aucun vainqueur ne doit être déterminé
+    And le message doit indiquer "Égalité - Aucun vainqueur déterminé"
+    And le nombre de votes blancs doit être 200
+
+Scenario: Votes blancs uniquement
+    Given le scrutin est au tour 1
+    And 1000 votes blancs ont été enregistrés
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And aucun vainqueur ne doit être déterminé
+    And le nombre de votes blancs doit être 1000
+    And le total des votes exprimés doit être 1000
+
+Scenario: Tentative d'enregistrement de votes blancs après clôture
+    Given le scrutin est au tour 1
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 600   |
+        | Candidat B | 400   |
+    And le scrutin a été clôturé
+    When je tente d'enregistrer 100 votes blancs après clôture
+    Then une exception doit être levée avec le message "Le scrutin est déjà clôturé"
+
+Scenario: Égalité triple pour la première place au premier tour - Ordre alphabétique
+    Given le scrutin est au tour 1
+    And les votes suivants ont été enregistrés:
+        | Candidat   | Votes |
+        | Candidat A | 300   |
+        | Candidat B | 300   |
+        | Candidat C | 300   |
+    When je clôture le scrutin
+    Then le scrutin doit être clôturé
+    And aucun vainqueur ne doit être déterminé
+    And les candidats qualifiés doivent être dans l'ordre alphabétique en cas d'égalité:
+        | Candidat   |
+        | Candidat A |
+        | Candidat B |
+
+Scenario: Votes blancs avec candidat unique
+    Given un scrutin majoritaire avec un seul candidat existe
+    And le candidat "Candidat Unique" est enregistré
+    And les votes suivants ont été enregistrés:
+        | Candidat        | Votes |
+        | Candidat Unique | 700   |
+    And 300 votes blancs ont été enregistrés
+    When je clôture le scrutin
+    Then le vainqueur doit être "Candidat Unique"
+    And le nombre de votes blancs doit être 300
+    And le total des votes exprimés doit être 1000
+    And les résultats doivent afficher:
+        | Candidat        | Votes | Pourcentage |
+        | Candidat Unique | 700   | 100.00%     |

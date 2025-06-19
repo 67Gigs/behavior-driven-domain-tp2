@@ -7,9 +7,11 @@ public class Scrutin
     private List<string> _candidatsQualifies;
     private bool _estCloture;
     private int _tourActuel;
+    private int _votesBlancs;
 
     public bool EstCloture => _estCloture;
     public int TourActuel => _tourActuel;
+    public int VotesBlancs => _votesBlancs;
 
     public Scrutin()
     {
@@ -18,6 +20,7 @@ public class Scrutin
         _candidatsQualifies = new List<string>();
         _estCloture = false;
         _tourActuel = 1;
+        _votesBlancs = 0;
     }
 
     public void AjouterCandidat(string nom)
@@ -46,6 +49,14 @@ public class Scrutin
             throw new ArgumentException($"Le candidat {candidat} n'existe pas");
 
         _votes[candidat] = votes;
+    }
+
+    public void EnregistrerVotesBlancs(int votesBlancs)
+    {
+        if (_estCloture)
+            throw new InvalidOperationException("Le scrutin est déjà clôturé");
+
+        _votesBlancs = votesBlancs;
     }
 
     public void DefinirCandidatsQualifies(List<string> candidats)
@@ -81,9 +92,10 @@ public class Scrutin
     private ResultatScrutin CalculerResultat()
     {
         var resultat = new ResultatScrutin();
-        var totalVotes = _votes.Values.Sum();
+        var totalVotesValides = _votes.Values.Sum();
+        var totalVotesExprimes = totalVotesValides + _votesBlancs;
 
-        if (totalVotes == 0)
+        if (totalVotesExprimes == 0)
         {
             resultat.Message = "Aucun vote enregistré";
             return resultat;
@@ -94,7 +106,7 @@ public class Scrutin
         
         foreach (var vote in _votes.OrderByDescending(v => v.Value))
         {
-            var pourcentage = Math.Round((decimal)vote.Value / totalVotes * 100, 2);
+            var pourcentage = totalVotesValides > 0 ? Math.Round((decimal)vote.Value / totalVotesValides * 100, 2) : 0;
             resultatsParCandidat.Add(new ResultatCandidat
             {
                 Candidat = vote.Key,
@@ -104,6 +116,8 @@ public class Scrutin
         }
 
         resultat.ResultatsParCandidat = resultatsParCandidat;
+        resultat.VotesBlancs = _votesBlancs;
+        resultat.TotalVotesExprimes = totalVotesExprimes;
 
         // Logique de détermination du vainqueur
         var meilleurCandidat = resultatsParCandidat.FirstOrDefault();
@@ -118,11 +132,16 @@ public class Scrutin
             else
             {
                 // Second tour nécessaire - garder les 2 meilleurs
-                // En cas d'égalité pour la 2e place, on prend le premier par ordre alphabétique
-                resultat.CandidatsQualifiesSecondTour = resultatsParCandidat
+                // En cas d'égalité, on prend par ordre alphabétique
+                var candidatsOrdonnes = resultatsParCandidat
+                    .GroupBy(r => r.Votes)
+                    .OrderByDescending(g => g.Key)
+                    .SelectMany(g => g.OrderBy(r => r.Candidat))
                     .Take(2)
                     .Select(r => r.Candidat)
                     .ToList();
+
+                resultat.CandidatsQualifiesSecondTour = candidatsOrdonnes;
             }
         }
         else if (_tourActuel == 2)
@@ -157,6 +176,8 @@ public class ResultatScrutin
     public List<ResultatCandidat> ResultatsParCandidat { get; set; }
     public List<string> CandidatsQualifiesSecondTour { get; set; }
     public string Message { get; set; }
+    public int VotesBlancs { get; set; }
+    public int TotalVotesExprimes { get; set; }
 
     public ResultatScrutin()
     {

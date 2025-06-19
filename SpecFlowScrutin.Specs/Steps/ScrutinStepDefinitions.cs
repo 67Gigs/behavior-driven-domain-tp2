@@ -244,6 +244,44 @@ public class ScrutinStepDefinitions
         Assert.AreEqual(2, _scrutin.TourActuel);
         Assert.IsTrue(_scrutin.EstCloture);
     }
+
+    [Given(@"(.*) votes blancs ont été enregistrés")]
+    public void GivenVotesBlansOntEteEnregistres(int votesBlancs)
+    {
+        _scrutin.EnregistrerVotesBlancs(votesBlancs);
+    }
+
+    [When(@"je tente d'enregistrer (.*) votes blancs après clôture")]
+    public void WhenJeTenteDenregistrerVotesBlansApresClôture(int votesBlancs)
+    {
+        try
+        {
+            _scrutin.EnregistrerVotesBlancs(votesBlancs);
+        }
+        catch (Exception ex)
+        {
+            _exception = ex;
+        }
+    }
+
+    [Then(@"le nombre de votes blancs doit être (.*)")]
+    public void ThenLeNombreDeVotesBlansDoitEtre(int votesBlancs)
+    {
+        Assert.AreEqual(votesBlancs, _resultat.VotesBlancs);
+    }
+
+    [Then(@"le total des votes exprimés doit être (.*)")]
+    public void ThenLeTotalDesVotesExprimesDoitEtre(int totalVotes)
+    {
+        Assert.AreEqual(totalVotes, _resultat.TotalVotesExprimes);
+    }
+
+    [Then(@"les candidats qualifiés doivent être dans l'ordre alphabétique en cas d'égalité:")]
+    public void ThenLesCandidatsQualifiesDoiventEtreDansLordreAlphabetiqueEnCasEgalite(Table table)
+    {
+        var candidatsAttendus = table.Rows.Select(row => row["Candidat"]).ToList();
+        CollectionAssert.AreEqual(candidatsAttendus, _resultat.CandidatsQualifiesSecondTour);
+    }
 }
 
 // Classes de support pour les données
