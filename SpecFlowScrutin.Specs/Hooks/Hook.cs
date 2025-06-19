@@ -1,7 +1,7 @@
 using System;
 using TechTalk.SpecFlow;
 
-namespace SpecFlowApi.Hooks
+namespace SpecFlowScrutin.Specs.Hooks
 {
     [Binding]
     public class Hooks

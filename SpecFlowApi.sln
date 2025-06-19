@@ -1,10 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecFlowApi", "SpecFlowApi\SpecFlowApi.csproj", "{2E372C86-B97E-4AAD-8B10-BBA28924AA9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecFlowScrutin.Specs", "SpecFlowScrutin.Specs\SpecFlowScrutin.Specs.csproj", "{2E372C86-B97E-4AAD-8B10-BBA28924AA9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecFlowScrutin", "SpecFlowScrutin\SpecFlowScrutin.csproj", "{5B67C2D7-6AB7-49CB-9A35-9F41576136A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		|Any CPU = |Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B67C2D7-6AB7-49CB-9A35-9F41576136A0}.|Any CPU.ActiveCfg = |Any CPU
+		{5B67C2D7-6AB7-49CB-9A35-9F41576136A0}.|Any CPU.Build.0 = |Any CPU
+		{2E372C86-B97E-4AAD-8B10-BBA28924AA9E}.|Any CPU.ActiveCfg = |Any CPU
+		{2E372C86-B97E-4AAD-8B10-BBA28924AA9E}.|Any CPU.Build.0 = |Any CPU
 	EndGlobalSection
 EndGlobal

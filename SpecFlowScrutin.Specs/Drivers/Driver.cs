@@ -1,6 +1,6 @@
 using System;
 
-namespace SpecFlowApi.Drivers
+namespace SpecFlowScrutin.Specs.Drivers
 {
     public class Driver
     {
